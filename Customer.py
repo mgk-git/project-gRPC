@@ -14,10 +14,16 @@ def run():
     # of the code.
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = service_pb2_grpc.BankStub(channel)
-        response = stub.SayHello(service_pb2.HelloRequest(name='you'))
-        print("Greeter client received: " + response.message)
         response =stub.MsgDelivery(service_pb2.RequestMsg(type='query'))
-        print("Balance=: " + response.value)
+        print(response.balance)
+        response = stub.MsgDelivery(service_pb2.RequestMsg(type='deposit', amount=100))
+        print(response.status)
+        response = stub.MsgDelivery(service_pb2.RequestMsg(type='query'))
+        print(response.balance)
+        response = stub.MsgDelivery(service_pb2.RequestMsg(type='withdraw', amount=100))
+        print(response.status)
+        response = stub.MsgDelivery(service_pb2.RequestMsg(type='query'))
+        print(response.balance)
 
 
 

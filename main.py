@@ -15,7 +15,7 @@ def start():
     print('Starting the process')
     branch_ids=[1,2,3,4]
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    service_pb2_grpc.add_BankServicer_to_server(Branch(1,500,branch_ids), server)
+    service_pb2_grpc.add_BankServicer_to_server(Branch(1,700,branch_ids), server)
     server.add_insecure_port('[::]:50051')
     server.start()
 
