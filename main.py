@@ -2,7 +2,6 @@ import grpc
 from concurrent import futures
 
 import service_pb2_grpc
-import test
 from Branch import Branch
 # This is a sample Python script.
 
@@ -19,7 +18,13 @@ def start():
     server.add_insecure_port('[::]:50051')
     server.start()
 
+    server_1 = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    service_pb2_grpc.add_BankServicer_to_server(Branch(1, 700, branch_ids), server)
+    server_1.add_insecure_port('[::]:50052')
+    server_1.start()
+
     server.wait_for_termination()
+    server_1.wait_for_termination()
 
 
 # Press the green button in the gutter to run the script.

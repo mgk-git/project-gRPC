@@ -6,8 +6,9 @@ message RequestMsg {
 }
 
 message ReplyMsg {
-    string  status = 1;
-    float balance =2;
+    int32 status_code=1;
+    string  status_msg = 2;
+    float balance =3;
 
 
 }

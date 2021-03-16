@@ -15,12 +15,9 @@ class Branch(service_pb2_grpc.BankServicer):
         self.recvMsg = list()
         logging.basicConfig()
 
-    def SayHello(self, request, context):
-        # print(self.balance)
-        return service_pb2.HelloReply(message='Hello1111111, %s!' % request.name)
+
 
     def MsgDelivery(self, request, context):
-        print(request.type)
         if request.type == 'query':
             return self.Query()
         elif request.type == 'deposit':
@@ -29,15 +26,15 @@ class Branch(service_pb2_grpc.BankServicer):
             return self.Withdraw(request.amount)
         else:
             print(request.type)
-        return service_pb2.ReplyMsg(value=self.balance)
+        return service_pb2.ReplyMsg(balance=self.balance)
 
     def Query(self):
-        return service_pb2.ReplyMsg(balance=self.balance)
+        return service_pb2.ReplyMsg(status_code=200,status_msg="Success")
 
     def Withdraw(self,amount):
         self.balance=self.balance-amount
-        return service_pb2.ReplyMsg(status="Success")
+        return service_pb2.ReplyMsg(status_code=200,status_msg="Success")
 
     def Deposit(self,amount):
         self.balance = self.balance + amount
-        return service_pb2.ReplyMsg(status="Success")
+        return service_pb2.ReplyMsg(status_code=200,status_msg="Success")
