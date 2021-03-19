@@ -10,6 +10,7 @@ import logging
 class Branch(service_pb2_grpc.BankServicer):
     lock = threading.Lock()
     CONST_SUCCESS="Success"
+    ports = dict([(1, 50051),(2, 50052),(3, 50053)])
     def __init__(self, id, balance, branches):
         self.id = id
         self.balance = balance

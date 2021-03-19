@@ -1,5 +1,7 @@
 import json
+import os
 import sys
+import time
 from builtins import int
 
 import grpc
@@ -8,7 +10,7 @@ from concurrent import futures
 import service_pb2_grpc
 from Branch import Branch
 from Customer import Customer
-from multiprocessing import Process
+from multiprocessing import Process,Queue
 
 # This is a sample Python script.
 
@@ -17,27 +19,29 @@ from multiprocessing import Process
 branches=[]
 customers=[]
 port=50050;
+ports = dict([(1, 50051), (2, 50052), (3, 50053)])
 
-def f(name):
-    print('hello', name)
 
-def start_server(port):
-    # Use a breakpoint in the code line below to debug your script.
-    print('Starting the process')
-    branch_ids=[1,2,3,4]
+
+def start_server(branch):
+
+    q.put(os.getpid())
+    brnch = Branch(branch["id"], branch["balance"], q)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    service_pb2_grpc.add_BankServicer_to_server(Branch(1,700,branch_ids), server)
-    server.add_insecure_port('[::]:'+str(port))
+    service_pb2_grpc.add_BankServicer_to_server(brnch, server)
+    server.add_insecure_port('[::]:'+str(ports[branch["id"]]))
     server.start()
     server.wait_for_termination()
 
-def run_customer():
-    customer =Customer(1,[])
-    customer.createStub()
-    customer.run()
+def run_customer(customer):
+    cstmr =Customer(customer["id"],customer["events"])
+    cstmr.createStub()
+    cstmr.executeEvents()
+
 
 # Press the green button in the gutter to run the script.
 print(__name__)
+q = Queue()
 if __name__ == '__main__':
     arg_size=len(sys.argv)
     print(arg_size)
@@ -50,19 +54,19 @@ if __name__ == '__main__':
         for x in arr:
             type= x["type"]
             if type=="customer":
-                customer= Customer( x["id"], x["events"])
-                customers.append(customer)
+                customers.append(x)
             elif type=="branch":
-                branch=Branch(x["id"], x["balance"],[])
-                branches.append(branch)
+                branches.append(x)
 
     for branch in branches:
-        port=port+1
-        p = Process(target=start_server, args=(port,))
+        p = Process(target=start_server, args=(branch,))
         p.start()
+        time.sleep(2)
+    time.sleep(5)
+
 
     for customer in customers:
-        p = Process(target=run_customer)
+        p = Process(target=run_customer,args=(customer,))
         p.start()
 
     print("End, Main")
