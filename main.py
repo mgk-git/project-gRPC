@@ -12,14 +12,15 @@ from Branch import Branch
 from Customer import Customer
 from multiprocessing import Process,Queue
 
-# This is a sample Python script.
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 branches=[]
 customers=[]
-port=50050;
+
+#ports configuration
 ports = dict([(1, 50051), (2, 50052), (3, 50053)])
+
+# to share process ids
+q = Queue()
 
 
 
@@ -39,12 +40,11 @@ def run_customer(customer):
     cstmr.executeEvents()
 
 
-# Press the green button in the gutter to run the script.
-print(__name__)
-q = Queue()
+
+
+
 if __name__ == '__main__':
     arg_size=len(sys.argv)
-    print(arg_size)
     if arg_size<2:
         print("The input file is missing. Please provide.")
         exit(2)
@@ -61,13 +61,18 @@ if __name__ == '__main__':
     for branch in branches:
         p = Process(target=start_server, args=(branch,))
         p.start()
+
+        #sleep for 2 sec after each branch process has  started.
         time.sleep(2)
-    time.sleep(5)
+
+    #Sleep for 2 secs after all the branches started.
+    time.sleep(2)
 
 
     for customer in customers:
         p = Process(target=run_customer,args=(customer,))
         p.start()
+
 
     print("End, Main")
 

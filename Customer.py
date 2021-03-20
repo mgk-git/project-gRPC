@@ -18,9 +18,22 @@ class Customer :
         self.stub = None
 
 
+
     def createStub(self):
             channel =grpc.insecure_channel('localhost:50051')
             self.stub = service_pb2_grpc.BankStub(channel)
 
+
+
     def executeEvents(self):
-        response = self.stub.MsgDelivery(service_pb2.RequestMsg(type='query'))
+
+        self.output = {"id":self.id,"recv":[]}
+        for evnt in self.events :
+            print(self.output)
+            if evnt["interface"] == 'query':
+                response = self.stub.MsgDelivery(service_pb2.RequestMsg(type='query'))
+                self.output["recv"].append({"interface":"query","result":response.status_msg,"money":response.balance})
+
+        f = open("Output.txt", "a")
+        f.write(str(self.output) +"\n")
+        f.close()
