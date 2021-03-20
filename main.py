@@ -2,11 +2,8 @@ import json
 import os
 import sys
 import time
-from builtins import int
-
 import grpc
 from concurrent import futures
-
 import service_pb2_grpc
 from Branch import Branch
 from Customer import Customer
@@ -17,20 +14,20 @@ branches=[]
 customers=[]
 
 #ports configuration
-ports = dict([(1, 50051), (2, 50052), (3, 50053)])
+ports = [(1, 50051), (2, 50052), (3, 50053)]
 
 # to share process ids
 q = Queue()
 
-
-
 def start_server(branch):
-
     q.put(os.getpid())
     brnch = Branch(branch["id"], branch["balance"], q)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     service_pb2_grpc.add_BankServicer_to_server(brnch, server)
-    server.add_insecure_port('[::]:'+str(ports[branch["id"]]))
+    for brn in ports:
+        if brn[0] ==branch["id"]:
+            server.add_insecure_port('[::]:'+str(brn[1]))
+            break
     server.start()
     server.wait_for_termination()
 
@@ -38,10 +35,6 @@ def run_customer(customer):
     cstmr =Customer(customer["id"],customer["events"])
     cstmr.createStub()
     cstmr.executeEvents()
-
-
-
-
 
 if __name__ == '__main__':
     arg_size=len(sys.argv)
@@ -61,19 +54,12 @@ if __name__ == '__main__':
     for branch in branches:
         p = Process(target=start_server, args=(branch,))
         p.start()
-
         #sleep for 2 sec after each branch process has  started.
         time.sleep(2)
 
     #Sleep for 2 secs after all the branches started.
     time.sleep(2)
 
-
     for customer in customers:
         p = Process(target=run_customer,args=(customer,))
         p.start()
-
-
-    print("End, Main")
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
