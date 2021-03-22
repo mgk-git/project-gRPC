@@ -14,7 +14,7 @@ branches=[]
 customers=[]
 
 #ports configuration
-ports = [(1, 50051), (2, 50052), (3, 50053)]
+bank_config = {1: 50051, 2: 50052, 3: 50053}
 
 # to share process ids
 q = Queue()
@@ -24,10 +24,7 @@ def start_server(branch):
     brnch = Branch(branch["id"], branch["balance"], q)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     service_pb2_grpc.add_BankServicer_to_server(brnch, server)
-    for brn in ports:
-        if brn[0] ==branch["id"]:
-            server.add_insecure_port('[::]:'+str(brn[1]))
-            break
+    server.add_insecure_port('[::]:'+str(bank_config[branch["id"]]))
     server.start()
     server.wait_for_termination()
 

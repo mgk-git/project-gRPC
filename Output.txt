@@ -1,0 +1,3 @@
+{'id': 2, 'recv': [{'interface': 'query', 'result': 'Success', 'money': 400.0}, {'interface': 'withdraw', 'result': 'Success'}, {'interface': 'deposit', 'result': 'Success'}, {'interface': 'query', 'result': 'Success', 'money': 120.0}]}
+{'id': 1, 'recv': [{'interface': 'query', 'result': 'Success', 'money': 400.0}, {'interface': 'withdraw', 'result': 'Success'}, {'interface': 'query', 'result': 'Success', 'money': 120.0}]}
+{'id': 3, 'recv': [{'interface': 'query', 'result': 'Success', 'money': 400.0}, {'interface': 'withdraw', 'result': 'Success'}, {'interface': 'deposit', 'result': 'Success'}, {'interface': 'query', 'result': 'Success', 'money': 120.0}]}

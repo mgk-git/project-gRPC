@@ -17,43 +17,53 @@ class Branch(service_pb2_grpc.BankServicer):
         logging.basicConfig()
 
     def MsgDelivery(self, request, context):
-        with self.lock:
-            if request.type == 'query':
-                return self.Query()
-            elif request.type == 'withdraw':
-                self.Withdraw(request.money)
-                if request.client_type == 'customer':
-                    for stb in self.getOtherBranchStubs():
-                        stb.MsgDelivery(service_pb2.RequestMsg(client_type='branch',type='withdraw',money=request.money))
-                return service_pb2.ReplyMsg(status_code=200, status_msg="Success")
+        self.stubList=self.getOtherBranchStubs()
+       # with self.lock:
+        self.recvMsg.append(request)
+        print(request.client_type)
+        if request.type == 'query':
+            return service_pb2.ReplyMsg(status_code=200,status_msg="Success",balance=self.Query())
+        elif request.type == 'withdraw':
+            self.Withdraw(request.money)
+            if request.client_type == 'customer':
+                self.Propogate_Withdraw(request.money)
+            return service_pb2.ReplyMsg(status_code=200, status_msg="Success")
 
-            elif request.type == 'deposit':
-                self.Deposit(request.money)
-                if request.client_type == 'customer':
-                    for stb in self.getOtherBranchStubs():
-                        stb.MsgDelivery(service_pb2.RequestMsg(client_type='branch',type='withdraw',money=request.money))
+        elif request.type == 'deposit':
+            self.Deposit(request.money)
+            if request.client_type == 'customer':
+                self.Propogate_Deposit(request.money)
                 return service_pb2.ReplyMsg(status_code=200, status_msg="Success")
             return service_pb2.ReplyMsg(balance=self.balance)
 
     def Query(self):
-        return service_pb2.ReplyMsg(status_code=200,status_msg="Success",balance=self.balance)
+        return self.balance
 
     def Withdraw(self,amount):
         self.balance=self.balance-amount
-        return service_pb2.ReplyMsg(status_code=200,status_msg="Success")
+
 
     def Deposit(self,amount):
         self.balance = self.balance + amount
-        return service_pb2.ReplyMsg(status_code=200,status_msg="Success")
+
+
+    def Propogate_Withdraw(self,amount):
+        for stb in self.stubList:
+            stb.MsgDelivery(service_pb2.RequestMsg(client_type='branch',type='withdraw',money=amount))
+
+    def Propogate_Deposit(self,amount):
+        for stb in self.stubList:
+            stb.MsgDelivery(service_pb2.RequestMsg(client_type='branch',type='deposit',money=amount))
 
     def getOtherBranchStubs(self):
-        if len(self.stubList)>0 :
-            return self.stubList
-        else:
-            for brn in self.bank:
-                if self.id != brn[0]:
-                    channel = grpc.insecure_channel('localhost:' + str(brn[1]))
-                    self.stubList.append(service_pb2_grpc.BankStub(channel))
-            return self.stubList
+        with self.lock:
+            if len(self.stubList)>0 :
+                return self.stubList
+            else:
+                for brn in self.bank:
+                    if self.id != brn[0]:
+                        channel = grpc.insecure_channel('localhost:' + str(brn[1]))
+                        self.stubList.append(service_pb2_grpc.BankStub(channel))
+                return self.stubList
 
 
