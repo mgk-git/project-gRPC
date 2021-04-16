@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\rservice.proto\">\n\nRequestMsg\x12\x13\n\x0b\x63lient_type\x18\x01 \x01(\t\x12\x0c\n\x04type\x18\x02 \x01(\t\x12\r\n\x05money\x18\x03 \x01(\x02\"D\n\x08ReplyMsg\x12\x13\n\x0bstatus_code\x18\x01 \x01(\x05\x12\x12\n\nstatus_msg\x18\x02 \x01(\t\x12\x0f\n\x07\x62\x61lance\x18\x03 \x01(\x02\x32/\n\x04\x42\x61nk\x12\'\n\x0bMsgDelivery\x12\x0b.RequestMsg\x1a\t.ReplyMsg\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\rservice.proto\"Y\n\nRequestMsg\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x13\n\x0b\x63lient_type\x18\x02 \x01(\t\x12\x0c\n\x04type\x18\x03 \x01(\t\x12\r\n\x05money\x18\x04 \x01(\x02\x12\r\n\x05\x63lock\x18\x05 \x01(\x05\"S\n\x08ReplyMsg\x12\x13\n\x0bstatus_code\x18\x01 \x01(\x05\x12\x12\n\nstatus_msg\x18\x02 \x01(\t\x12\x0f\n\x07\x62\x61lance\x18\x03 \x01(\x02\x12\r\n\x05\x63lock\x18\x04 \x01(\x05\x32/\n\x04\x42\x61nk\x12\'\n\x0bMsgDelivery\x12\x0b.RequestMsg\x1a\t.ReplyMsg\"\x00\x62\x06proto3'
 )
 
 
@@ -34,23 +34,37 @@ _REQUESTMSG = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='client_type', full_name='RequestMsg.client_type', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='id', full_name='RequestMsg.id', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='type', full_name='RequestMsg.type', index=1,
+      name='client_type', full_name='RequestMsg.client_type', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='money', full_name='RequestMsg.money', index=2,
-      number=3, type=2, cpp_type=6, label=1,
+      name='type', full_name='RequestMsg.type', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='money', full_name='RequestMsg.money', index=3,
+      number=4, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='clock', full_name='RequestMsg.clock', index=4,
+      number=5, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -67,7 +81,7 @@ _REQUESTMSG = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=17,
-  serialized_end=79,
+  serialized_end=106,
 )
 
 
@@ -100,6 +114,13 @@ _REPLYMSG = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='clock', full_name='ReplyMsg.clock', index=3,
+      number=4, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -112,8 +133,8 @@ _REPLYMSG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=81,
-  serialized_end=149,
+  serialized_start=108,
+  serialized_end=191,
 )
 
 DESCRIPTOR.message_types_by_name['RequestMsg'] = _REQUESTMSG
@@ -143,8 +164,8 @@ _BANK = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=151,
-  serialized_end=198,
+  serialized_start=193,
+  serialized_end=240,
   methods=[
   _descriptor.MethodDescriptor(
     name='MsgDelivery',
