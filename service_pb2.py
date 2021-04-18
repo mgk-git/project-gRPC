@@ -19,10 +19,42 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\rservice.proto\">\n\nRequestMsg\x12\x13\n\x0b\x63lient_type\x18\x01 \x01(\t\x12\x0c\n\x04type\x18\x02 \x01(\t\x12\r\n\x05money\x18\x03 \x01(\x02\"D\n\x08ReplyMsg\x12\x13\n\x0bstatus_code\x18\x01 \x01(\x05\x12\x12\n\nstatus_msg\x18\x02 \x01(\t\x12\x0f\n\x07\x62\x61lance\x18\x03 \x01(\x02\x32/\n\x04\x42\x61nk\x12\'\n\x0bMsgDelivery\x12\x0b.RequestMsg\x1a\t.ReplyMsg\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\rservice.proto\"\x19\n\twrite_set\x12\x0c\n\x04w_id\x18\x01 \x03(\x05\"k\n\nRequestMsg\x12\x13\n\x0b\x63lient_type\x18\x01 \x01(\t\x12\x0c\n\x04type\x18\x02 \x01(\t\x12\r\n\x05money\x18\x03 \x01(\x02\x12\x19\n\x05w_set\x18\x04 \x01(\x0b\x32\n.write_set\x12\x10\n\x08write_id\x18\x05 \x01(\x05\"V\n\x08ReplyMsg\x12\x13\n\x0bstatus_code\x18\x01 \x01(\x05\x12\x12\n\nstatus_msg\x18\x02 \x01(\t\x12\x0f\n\x07\x62\x61lance\x18\x03 \x01(\x02\x12\x10\n\x08write_id\x18\x04 \x01(\x05\x32/\n\x04\x42\x61nk\x12\'\n\x0bMsgDelivery\x12\x0b.RequestMsg\x1a\t.ReplyMsg\"\x00\x62\x06proto3'
 )
 
 
+
+
+_WRITE_SET = _descriptor.Descriptor(
+  name='write_set',
+  full_name='write_set',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='w_id', full_name='write_set.w_id', index=0,
+      number=1, type=5, cpp_type=1, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=17,
+  serialized_end=42,
+)
 
 
 _REQUESTMSG = _descriptor.Descriptor(
@@ -54,6 +86,20 @@ _REQUESTMSG = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='w_set', full_name='RequestMsg.w_set', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='write_id', full_name='RequestMsg.write_id', index=4,
+      number=5, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -66,8 +112,8 @@ _REQUESTMSG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=17,
-  serialized_end=79,
+  serialized_start=44,
+  serialized_end=151,
 )
 
 
@@ -100,6 +146,13 @@ _REPLYMSG = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='write_id', full_name='ReplyMsg.write_id', index=3,
+      number=4, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -112,13 +165,22 @@ _REPLYMSG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=81,
-  serialized_end=149,
+  serialized_start=153,
+  serialized_end=239,
 )
 
+_REQUESTMSG.fields_by_name['w_set'].message_type = _WRITE_SET
+DESCRIPTOR.message_types_by_name['write_set'] = _WRITE_SET
 DESCRIPTOR.message_types_by_name['RequestMsg'] = _REQUESTMSG
 DESCRIPTOR.message_types_by_name['ReplyMsg'] = _REPLYMSG
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+write_set = _reflection.GeneratedProtocolMessageType('write_set', (_message.Message,), {
+  'DESCRIPTOR' : _WRITE_SET,
+  '__module__' : 'service_pb2'
+  # @@protoc_insertion_point(class_scope:write_set)
+  })
+_sym_db.RegisterMessage(write_set)
 
 RequestMsg = _reflection.GeneratedProtocolMessageType('RequestMsg', (_message.Message,), {
   'DESCRIPTOR' : _REQUESTMSG,
@@ -143,8 +205,8 @@ _BANK = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=151,
-  serialized_end=198,
+  serialized_start=241,
+  serialized_end=288,
   methods=[
   _descriptor.MethodDescriptor(
     name='MsgDelivery',

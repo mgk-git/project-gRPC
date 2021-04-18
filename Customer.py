@@ -14,32 +14,33 @@ class Customer :
         self.recvMsg = list()
         # pointer for the stub
         self.stub = None
+        self.write_set = set([])
 
-    def createStub(self):
-        channel =grpc.insecure_channel('localhost:'+str(self.bank_config[self.id]))
-        self.stub = service_pb2_grpc.BankStub(channel)
-
+    def getStub(self,dest):
+        channel =grpc.insecure_channel('localhost:'+str(self.bank_config[dest]))
+        return service_pb2_grpc.BankStub(channel)
 
     def executeEvents(self):
         self.output = {"id":self.id,"recv":[]}
         for evnt in self.events :
             if evnt["interface"] == 'query':
-                response = self.stub.MsgDelivery(service_pb2.RequestMsg(client_type='customer',type='query'))
-                self.output["recv"].append({"interface":"query","result":response.status_msg,"money":response.balance})
+                response = self.getStub(evnt["dest"]).MsgDelivery(service_pb2.RequestMsg(client_type='customer',type='query'))
+                #self.output["recv"].append({"id":self.id,"balance":response.balance})
+                f = open("Output.txt", "a")
+                f.write(str({"id":self.id,"balance":response.balance}))
+                f.close()
             elif evnt["interface"] == 'withdraw':
-                response = self.stub.MsgDelivery(service_pb2.RequestMsg(client_type='customer',type='withdraw',money=evnt["money"]))
-                self.output["recv"].append({"interface":"withdraw","result":response.status_msg})
-                print("withdraw1")
+                response = self.getStub(evnt["dest"]).MsgDelivery(service_pb2.RequestMsg(client_type='customer',type='withdraw',money=evnt["money"],w_set=service_pb2.write_set(w_id=self.write_set)))
+                #self.output["recv"].append({"interface":"withdraw","result":response.status_msg})
+                self.write_set.add(response.write_id)
 
             elif evnt["interface"] == 'deposit':
-                response = self.stub.MsgDelivery(service_pb2.RequestMsg(client_type='customer',type='deposit',money=evnt["money"]))
-                self.output["recv"].append({"interface":"deposit","result":response.status_msg})
+                response = self.getStub(evnt["dest"]).MsgDelivery(service_pb2.RequestMsg(client_type='customer',type='deposit',money=evnt["money"],w_set=service_pb2.write_set(w_id=self.write_set)))
+                self.write_set.add(response.write_id)
+                #self.output["recv"].append({"interface":"deposit","result":response.status_msg})
 
         # sleep to finish all the customers.
         time.sleep(5)
-        print(self.output)
-        response = self.stub.MsgDelivery(service_pb2.RequestMsg(client_type='customer', type='query'))
-        self.output["recv"].append({"interface": "query", "result": response.status_msg, "money": response.balance})
-        f = open("Output.txt", "a")
-        f.write(str(self.output) +"\n")
-        f.close()
+
+       # response = self.stub.MsgDelivery(service_pb2.RequestMsg(client_type='customer', type='query'))
+        #self.output["recv"].append({"interface": "query", "result": response.status_msg, "money": response.balance})

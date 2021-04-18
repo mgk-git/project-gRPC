@@ -1,9 +1,15 @@
 syntax = "proto3";
 
+
+message write_set {
+    repeated int32 w_id =1;
+}
 message RequestMsg {
     string client_type=1;
     string type =2;
     float money=3;
+    write_set w_set =4;
+    int32 write_id =5;
 
 }
 
@@ -11,9 +17,9 @@ message ReplyMsg {
     int32 status_code=1;
     string  status_msg = 2;
     float balance =3;
-
-
+    int32 write_id =4;
 }
+
 
 service Bank {
   rpc MsgDelivery (RequestMsg) returns (ReplyMsg) {}

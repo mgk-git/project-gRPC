@@ -13,6 +13,9 @@ from multiprocessing import Process,Queue
 branches=[]
 customers=[]
 
+branch_processes=[]
+customer_processes=[]
+
 #ports configuration
 bank_config = {1: 50051, 2: 50052, 3: 50053}
 
@@ -30,7 +33,7 @@ def start_server(branch):
 
 def run_customer(customer):
     cstmr =Customer(customer["id"],customer["events"])
-    cstmr.createStub()
+    #cstmr.createStub()
     cstmr.executeEvents()
 
 if __name__ == '__main__':
@@ -45,12 +48,13 @@ if __name__ == '__main__':
             type= x["type"]
             if type=="customer":
                 customers.append(x)
-            elif type=="branch":
+            elif type=="bank":
                 branches.append(x)
 
     for branch in branches:
         p = Process(target=start_server, args=(branch,))
         p.start()
+        branch_processes.append(p)
         #sleep for 2 sec after each branch process has  started.
         time.sleep(2)
 
@@ -59,4 +63,15 @@ if __name__ == '__main__':
 
     for customer in customers:
         p = Process(target=run_customer,args=(customer,))
+        customer_processes.append(p)
         p.start()
+
+    # Sleep for 5 secs, so that all the events are executed. Then stop processes.
+    time.sleep(5)
+    for p in customer_processes:
+        p.kill()
+
+    for b in branch_processes:
+        b.kill()
+
+    print("End ")
