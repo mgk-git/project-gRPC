@@ -18,7 +18,8 @@ class Branch(service_pb2_grpc.BankServicer):
         self.write_set=set([])
 
     def MsgDelivery(self, request, context):
-
+        print("=================")
+        print(request)
        # with self.lock:
         self.recvMsg.append(request)
 
@@ -27,21 +28,20 @@ class Branch(service_pb2_grpc.BankServicer):
         elif request.type == 'withdraw':
             self.Withdraw(request.money)
             if request.client_type == 'customer':
-                self.Propogate_Withdraw(request.money)
-                next_write_id = self.nextWrite_id()
-                self.write_set.add(next_write_id)
-                return service_pb2.ReplyMsg(status_code=200, status_msg="Success", write_id=next_write_id)
+                write_id = self.nextWrite_id()
+                self.write_set.add(write_id)
+                self.Propogate_Withdraw(request.money,write_id)
+                return service_pb2.ReplyMsg(status_code=200, status_msg="Success", write_id=write_id)
             self.write_set.add(request.write_id)
             return service_pb2.ReplyMsg(status_code=200, status_msg="Success")
 
         elif request.type == 'deposit':
-            next_write_id = self.nextWrite_id()
             self.Deposit(request.money)
             if request.client_type == 'customer':
-                self.Propogate_Deposit(request.money)
-                next_write_id = self.nextWrite_id()
-                self.write_set.add(next_write_id)
-                return service_pb2.ReplyMsg(status_code=200, status_msg="Success",write_id=next_write_id)
+                write_id = self.nextWrite_id()
+                self.write_set.add(write_id)
+                self.Propogate_Deposit(request.money,write_id)
+                return service_pb2.ReplyMsg(status_code=200, status_msg="Success",write_id=write_id)
             self.write_set.add(request.write_id)
             return service_pb2.ReplyMsg(status_code=200, status_msg="Success")
 
@@ -56,15 +56,15 @@ class Branch(service_pb2_grpc.BankServicer):
         self.balance = self.balance + amount
 
 
-    def Propogate_Withdraw(self,amount):
+    def Propogate_Withdraw(self,amount,next_write_id):
         self.stubList = self.getOtherBranchStubs()
         for stb in self.stubList:
-            stb.MsgDelivery(service_pb2.RequestMsg(client_type='branch',type='withdraw',money=amount))
+            stb.MsgDelivery(service_pb2.RequestMsg(client_type='branch',type='withdraw',money=amount,write_id =next_write_id))
 
-    def Propogate_Deposit(self,amount):
+    def Propogate_Deposit(self,amount,next_write_id):
         self.stubList = self.getOtherBranchStubs()
         for stb in self.stubList:
-            stb.MsgDelivery(service_pb2.RequestMsg(client_type='branch',type='deposit',money=amount))
+            stb.MsgDelivery(service_pb2.RequestMsg(client_type='branch',type='deposit',money=amount,write_id =next_write_id))
 
     def getOtherBranchStubs(self):
         with self.lock:
@@ -78,5 +78,5 @@ class Branch(service_pb2_grpc.BankServicer):
                 return self.stubList
 
     def nextWrite_id(self):
-        self.write_id= self.write_id+10
-        return self.write_id
+        return self.write_id + 10
+

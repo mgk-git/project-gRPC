@@ -24,7 +24,7 @@ class Customer :
         self.output = {"id":self.id,"recv":[]}
         for evnt in self.events :
             if evnt["interface"] == 'query':
-                response = self.getStub(evnt["dest"]).MsgDelivery(service_pb2.RequestMsg(client_type='customer',type='query'))
+                response = self.getStub(evnt["dest"]).MsgDelivery(service_pb2.RequestMsg(client_type='customer',type='query',w_set=service_pb2.write_set(w_id=self.write_set)))
                 #self.output["recv"].append({"id":self.id,"balance":response.balance})
                 f = open("Output.txt", "a")
                 f.write(str({"id":self.id,"balance":response.balance}))
